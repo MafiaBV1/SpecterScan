@@ -21,7 +21,7 @@ import shlex
 import re
 # ======== SpecterScan Branding ========
 PROJECT_NAME = "SpecterScan"
-PROJECT_TAGLINE = "Safe, lab-first reconnaissance toolkit · Non-destructive by default"
+PROJECT_TAGLINE = "Intelligence-driven recon · Safe · Authorized · Insightful"
 PROJECT_WARNING = "⚠️ WARNING: Use only against targets you have explicit written permission to test."
 
 ASCII_BANNER = r"""
