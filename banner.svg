@@ -1,0 +1,57 @@
+<!--?xml version="1.0" encoding="UTF-8"?-->
+<svg width="1200" height="360" viewBox="0 0 1200 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SpecterScan banner">
+  <defs>
+    <linearGradient id="grad1" x1="0" x2="1">
+      <stop offset="0" stop-color="#00e6ff"></stop>
+      <stop offset="1" stop-color="#0073ff"></stop>
+    </linearGradient>
+    <radialGradient id="bggrad" cx="50%" cy="50%" r="75%">
+      <stop offset="0%" stop-color="#00161e"></stop>
+      <stop offset="100%" stop-color="#000000"></stop>
+    </radialGradient>
+    <style>
+      .bg { fill: url(#bggrad); }
+      .title {
+        font-family: "Consolas", "Courier New", monospace;
+        font-weight: 800;
+        font-size: 64px;
+        fill: url(#grad1);
+        letter-spacing: 3px;
+      }
+      .tag {
+        font-family: "Segoe UI", Arial, sans-serif;
+        font-size: 18px;
+        fill: #9ad9ff;
+      }
+      .warn {
+        font-family: "Courier New", monospace;
+        font-size: 13px;
+        fill: #ffb3b3;
+      }
+      .radar { fill: none; stroke: #00e6ff; stroke-width: 2; opacity: 0.8; }
+      .sweep { fill: #00e6ff; opacity: 0.12; }
+      .dot { fill: #00e6ff; }
+      .panel { filter: drop-shadow(0 6px 14px rgba(0,0,0,0.6)); }
+    </style>
+  </defs>
+
+  <!-- background -->
+  <rect width="100%" height="100%" class="bg"></rect>
+
+  <g transform="translate(100,40)" class="panel">
+    <!-- radar emblem -->
+    <g transform="translate(0,40)">
+      <circle cx="100" cy="100" r="90" stroke="#003d52" stroke-width="2" fill="#00171f"></circle>
+      <circle cx="100" cy="100" r="60" class="radar"></circle>
+      <circle cx="100" cy="100" r="30" class="radar"></circle>
+      <path d="M100 100 L180 70 A90 90 0 0 0 160 170 Z" class="sweep"></path>
+      <line x1="100" y1="100" x2="180" y2="70" class="radar"></line>
+      <circle cx="100" cy="100" r="4" class="dot"></circle>
+    </g>
+
+    <!-- title and tagline -->
+    <text x="260" y="130" class="title">SPECTERSCAN</text>
+    <text x="260" y="165" class="tag">Intelligence-driven recon · Safe · Authorized · Insightful</text>
+    <text x="260" y="195" class="warn">⚠️ Use only against targets you have explicit written permission to test.</text>
+  </g>
+</svg>
