@@ -10,7 +10,7 @@ Never scan systems or networks you do not own or have written permission to test
 If you discover a bug or security issue in SpecterScan itself, please:
 
 1. Do **not** open a public GitHub issue for sensitive findings.
-2. Instead, email the maintainer at **[your.email@example.com]** or use GitHub Security Advisories.
+2. Instead, email the maintainer at **[oleeven5002@gmail.com]** or use GitHub Security Advisories.
 
 I’ll review and address reports as quickly as possible.
 
