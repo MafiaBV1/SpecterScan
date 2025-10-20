@@ -48,3 +48,18 @@ export ADVSCAN_ALLOW_AGGRESSIVE=1
 python3 specterscan.py
 # when asked for wordlists, just press Enter — SpecterScan will auto-select from ./wordlists
 
+
+---
+
+## sanity checklist
+
+- ✅ `installer.sh` exists in repo root and is executable.  
+- ✅ running it on Kali creates `.venv/` and `wordlists/` with 3 curated lists.  
+- ✅ after the user types the **consent phrase**, `ensure_curated_wordlists()` runs once if the folder is empty.  
+- ✅ at each prompt (gobuster/ffuf/dirbuster/hydra), pressing **Enter** auto-selects a sensible file—no path hunting.  
+- ✅ tools installed: nmap, whatweb, nikto, gobuster, ffuf, masscan, hydra, sqlmap, wpscan, dig.
+
+if you want, paste the specific prompt lines from your `specterscan.py` and I’ll reply with the **exact replacements** for those spots so you can copy/paste without hunting.
+::contentReference[oaicite:0]{index=0}
+
+
