@@ -59,7 +59,5 @@ python3 specterscan.py
 - ✅ at each prompt (gobuster/ffuf/dirbuster/hydra), pressing **Enter** auto-selects a sensible file—no path hunting.  
 - ✅ tools installed: nmap, whatweb, nikto, gobuster, ffuf, masscan, hydra, sqlmap, wpscan, dig.
 
-if you want, paste the specific prompt lines from your `specterscan.py` and I’ll reply with the **exact replacements** for those spots so you can copy/paste without hunting.
-::contentReference[oaicite:0]{index=0}
 
 
