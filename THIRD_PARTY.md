@@ -1,2 +1,12 @@
-This project optionally uses curated files from SecLists (https://github.com/danielmiessler/SecLists) — licensed MIT. :contentReference[oaicite:4]{index=4}
-WPScan is used optionally; WPScan packaging/installation varies (Ruby gem, Docker). WPScan license and install instructions: https://wpscan.com/how-to-install-wpscan/. :contentReference[oaicite:5]{index=5}
+# Third-Party Components
+
+SpecterScan uses or references these external tools and resources:
+
+| Component | Purpose | License | URL |
+|------------|----------|----------|-----|
+| **SecLists** | Curated discovery and brute-force wordlists | MIT | https://github.com/danielmiessler/SecLists |
+| **WPScan** | WordPress vulnerability scanner | GPL-3.0 | https://wpscan.com/ |
+| **Nmap, Nikto, Gobuster, FFUF, Masscan, Hydra, SQLMap, WhatWeb** | Reconnaissance and testing utilities | Various OSS | Project homepages |
+| **Python** | Main runtime environment | PSF License | https://www.python.org |
+
+Each retains its own copyright and license; see linked sources for full terms.
