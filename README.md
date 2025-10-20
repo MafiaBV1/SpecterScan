@@ -29,6 +29,21 @@ Built initially under WSL, it runs seamlessly on **Kali Linux**, **Ubuntu**, and
 ### 🔧 Install Required Tools
 Make sure the common recon utilities are installed and accessible in your `$PATH`.
 
+## Quick setup
+```bash
+# one-time
+./installer.sh
+source .venv/bin/activate
+
+# run (non-aggressive)
+python3 specterscan.py
+
+# run aggressive: you must have authorization
+export ADVSCAN_ALLOW_AGGRESSIVE=1
+python3 specterscan.py
+# when asked for wordlists, just press Enter — SpecterScan will auto-select from ./wordlists
+
+
 ```bash
 sudo apt update && sudo apt install -y nmap whois dig sublist3r
 # Optional extras
