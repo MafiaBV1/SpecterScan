@@ -20,7 +20,7 @@ import shlex
 import re
 # ======== SpecterScan Branding ========
 PROJECT_NAME = "SpecterScan"
-PROJECT_TAGLINE = "Intelligence-driven recon · Safe · Authorized · Insightful"
+PROJECT_TAGLINE = "Safe, lab-first reconnaissance toolkit · Non-destructive by default"
 PROJECT_WARNING = "⚠️ WARNING: Use only against targets you have explicit written permission to test."
 
 ASCII_BANNER = r"""
@@ -45,6 +45,64 @@ def print_banner(quiet: bool = False):
     print(PROJECT_WARNING)
     print()  # spacer
 # ======== End SpecterScan Branding ========
+# --- auto wordlist helpers ---
+import glob, urllib.request
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+WORDLIST_DIRS = [
+    os.path.join(BASE_DIR, "wordlists"),
+    os.path.join(BASE_DIR, "scripts", "wordlists"),  # fallback for older structure
+]
+
+CURATED_WORDLISTS = {
+    "subdomains-top1k.txt": "https://raw.githubusercontent.com/danielmiessler/SecLists/master/Discovery/DNS/subdomains-top1k.txt",
+    "usernames-top1k.txt":  "https://raw.githubusercontent.com/danielmiessler/SecLists/master/Usernames/top-usernames-shortlist.txt",
+    "passwords-10k.txt":    "https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Common-Credentials/10k-most-common.txt",
+}
+
+def _first_wordlist_dir():
+    for d in WORDLIST_DIRS:
+        if os.path.isdir(d):
+            return d
+    d = os.path.join(BASE_DIR, "wordlists")
+    os.makedirs(d, exist_ok=True)
+    return d
+
+def list_local_wordlists():
+    wl_dir = _first_wordlist_dir()
+    files = sorted([
+        os.path.join(wl_dir, os.path.basename(p))
+        for p in glob.glob(os.path.join(wl_dir, "*"))
+        if os.path.isfile(p)
+    ])
+    return files
+
+def ensure_curated_wordlists():
+    """Download curated lists if wordlists dir is empty."""
+    wl_dir = _first_wordlist_dir()
+    have = [f for f in list_local_wordlists()]
+    if have:
+        return
+    print("[i] No local wordlists found — downloading curated SecLists snippets...")
+    for name, url in CURATED_WORDLISTS.items():
+        dest = os.path.join(wl_dir, name)
+        try:
+            urllib.request.urlretrieve(url, dest)
+            print(f"[+] downloaded {name}")
+        except Exception as e:
+            print(f"[!] failed to download {name}: {e}")
+
+def auto_pick_wordlist(prefer=None):
+    """Return a path to the 'best' available wordlist (optionally by substring)."""
+    files = list_local_wordlists()
+    if not files:
+        return None
+    if prefer:
+        for f in files:
+            if prefer.lower() in os.path.basename(f).lower():
+                return f
+    return files[0]
+
 
 # ---------------- Konfig ----------------
 NON_AGGRESSIVE_TOOLS = {
@@ -240,8 +298,19 @@ def run_dirbuster(target_url, outdir, wordlist=None, threads=50, timeout=3600, j
     Merk: DirBuster-distribusjoner varierer — sjekk `--help` for din versjon. Wordlist må oppgis for brute-force.
     """
     if not wordlist:
-        print("[WARN] DirBuster krever en wordlist. Oppgi path til wordlist for å kjøre.")
-        return None
+        picked = auto_pick_wordlist(prefer="subdomain") or auto_pick_wordlist(prefer="dir") or auto_pick_wordlist()
+        if picked:
+            print(f"[i] No wordlist provided; auto-selected: {picked}")
+            wordlist = picked
+        else:
+            print("[WARN] DirBuster requires a wordlist and none were found locally.")
+            ensure_curated_wordlists()
+            picked = auto_pick_wordlist()
+            if picked:
+                print(f"[i] Auto-selected after download: {picked}")
+                wordlist = picked
+            else:
+                return None
 
     safe_name = sanitize_filename(target_url.replace("https://", "").replace("http://", "").rstrip('/'))
     out_file = os.path.join(outdir, f"dirbuster_{safe_name}.txt")
@@ -305,11 +374,30 @@ def run_masscan(target_ip, outdir):
 def run_hydra(target_ip):
     print("Hydra krever at du oppgir tjeneste (f.eks. ssh, ftp, http-post-form) og wordlist-filer.")
     service = input("Tjeneste (f.eks. ssh): ").strip()
-    userlist = input("Path til brukernavnsliste (-L) (tryk Enter for å hoppe): ").strip()
-    passlist = input("Path til passordliste (-P): ").strip()
+    userlist = input("Path til brukernavnsliste (-L) (Enter to auto-select or skip): ").strip()
+    passlist = input("Path til passordliste (-P) (Enter to auto-select): ").strip()
+
+    # auto-pick passlist if blank
     if not passlist:
-        print("Hopper over hydra — ingen passordliste oppgitt.")
-        return None
+        passlist_path = auto_pick_wordlist(prefer="pass") or auto_pick_wordlist(prefer="password") or auto_pick_wordlist()
+        if passlist_path:
+            passlist = passlist_path
+            print(f"[i] Auto-selected password list: {os.path.basename(passlist)}")
+        else:
+            print("Hopper over hydra — ingen passordliste tilgjengelig.")
+            return None
+
+    # auto-pick userlist if blank
+    if not userlist:
+        userlist_path = auto_pick_wordlist(prefer="user") or auto_pick_wordlist(prefer="username")
+        if userlist_path:
+            userlist = userlist_path
+            print(f"[i] Auto-selected user list: {os.path.basename(userlist)}")
+        else:
+            single_user = input("Oppgi enkeltbrukernavn (-l) hvis du ønsker (tryk Enter for ikke): ").strip()
+            if not single_user:
+                print("[i] No userlist provided and no local userlist found; aborting hydra.")
+                return None
     target = input(f"Mål (IP eller hostname) [{target_ip}]: ").strip() or target_ip
     out_file = f"hydra_{sanitize_filename(target)}_{service}.txt"
     cmd = ["hydra"]
@@ -478,17 +566,25 @@ def main():
                 continue
 
             if bin_name == "gobuster":
-                wordlist = input("Path til wordlist for gobuster (tryk Enter for å hoppe): ").strip()
+                wordlist = input("Path til wordlist for gobuster (press Enter to auto-select): ").strip()
                 if not wordlist:
-                    print("Hopper over gobuster — ingen wordlist oppgitt.")
-                    continue
+                    wordlist = auto_pick_wordlist(prefer="subdomain") or auto_pick_wordlist(prefer="dir") or auto_pick_wordlist()
+                    if wordlist:
+                        print(f"[i] Auto-selected: {os.path.basename(wordlist)}")
+                    else:
+                        print("Hopper over gobuster — ingen wordlist tilgjengelig.")
+                        continue
                 cmd = ["gobuster", "dir", "-u", target_url if target_url.startswith("http") else f"http://{target_url}", "-w", wordlist, "-t", "20"]
                 timeout = 600
             elif bin_name == "ffuf":
-                wordlist = input("Path til wordlist for ffuf (tryk Enter for å hoppe): ").strip()
+                wordlist = input("Path til wordlist for ffuf (press Enter to auto-select): ").strip()
                 if not wordlist:
-                    print("Hopper over ffuf — ingen wordlist oppgitt.")
-                    continue
+                    wordlist = auto_pick_wordlist(prefer="subdomain") or auto_pick_wordlist(prefer="dir") or auto_pick_wordlist()
+                    if wordlist:
+                        print(f"[i] Auto-selected: {os.path.basename(wordlist)}")
+                    else:
+                        print("Hopper over ffuf — ingen wordlist tilgjengelig.")
+                        continue
                 cmd = ["ffuf", "-u", f"{target_url.rstrip('/')}/FUZZ", "-w", wordlist, "-t", "40"]
                 timeout = 600
             elif bin_name == "massdns":
@@ -530,6 +626,8 @@ def main():
                 print("Bekreftelse feilet — hopper over aggressive verktøy.")
             else:
                 print("Bekreftet. Kjører aggressive verktøy etter brukerens valg.")
+                # ensure wordlists exist (download curated if folder empty)
+                ensure_curated_wordlists()
                 if check_tool_exists("masscan"):
                     run_masscan(target_ip, chosen_outdir)
                 if check_tool_exists("hydra"):
