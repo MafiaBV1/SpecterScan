@@ -1,4 +1,3 @@
-n
 #!/usr/bin/env python3
 r"""
 advanced_scan.py
