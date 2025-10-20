@@ -1,4 +1,7 @@
 ![SpecterScan Banner](./banner.svg)
+[![License](https://img.shields.io/badge/license-MIT-blue)]()
+[![Python](https://img.shields.io/badge/python-3.x-green)]()
+
 
 # SpecterScan
 
