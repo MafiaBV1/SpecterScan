@@ -35,7 +35,7 @@ sudo apt update && sudo apt install -y nmap whois dig sublist3r
 sudo apt install -y masscan nikto dirb whatweb
 
 ## Quick setup
-```bash
+
 # one-time
 ./installer.sh
 source .venv/bin/activate
