@@ -29,6 +29,10 @@ Built initially under WSL, it runs seamlessly on **Kali Linux**, **Ubuntu**, and
 ### 🔧 Install Required Tools
 Make sure the common recon utilities are installed and accessible in your `$PATH`.
 
+sudo apt update && sudo apt install -y nmap whois dig sublist3r
+# Optional extras
+sudo apt install -y masscan nikto dirb whatweb
+
 ## Quick setup
 ```bash
 # one-time
@@ -45,6 +49,3 @@ python3 specterscan.py
 
 
 ```bash
-sudo apt update && sudo apt install -y nmap whois dig sublist3r
-# Optional extras
-sudo apt install -y masscan nikto dirb whatweb
